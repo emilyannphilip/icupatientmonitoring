@@ -34,7 +34,8 @@ const RequireAdmin = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to="/admin/login" state={{ from: location }} replace />;
   }
 
-  if (user?.designation !== 'Admin') {
+  const designation = user?.designation as string | undefined;
+  if (designation !== 'Admin' && designation !== 'Administrator') {
     return <Navigate to="/admin/patients" replace />;
   }
 
