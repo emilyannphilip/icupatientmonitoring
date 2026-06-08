@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Eye, EyeOff, UserPlus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import hospitalBg from "../../assets/hospital-bg.png";
+import { AdminLayout } from '@/components/layout/AdminLayout';
 
 export default function Registration() {
   const [fullName, setFullName] = useState('');
@@ -71,35 +71,19 @@ export default function Registration() {
   const isFormValid = fullName && username && empId && email && password && confirmPassword && designation && status && (password === confirmPassword);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
-      {/* Left Branding Panel (Hidden on Mobile) */}
-      <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between overflow-hidden">
-        <div className="absolute inset-0 z-0">
-           <img src={hospitalBg} alt="Hospital" className="w-full h-full object-cover" />
-           <div className="absolute inset-0 bg-gradient-to-t from-[#b71a22] via-[#b71a22]/70 to-transparent/20" />
-        </div>
-        
-        <div className="relative z-10 p-12 flex-1 flex flex-col justify-end text-white pb-24">
-           <h1 className="text-5xl font-bold mb-6 tracking-tight">Welcome to<br/>Believers Hospital</h1>
-           <p className="text-xl text-white/90 max-w-md leading-relaxed">
-             Join Believers Hospital and create your account to securely manage patient records.
-           </p>
-        </div>
-      </div>
-
-      {/* Right Registration Panel */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-slate-50 overflow-y-auto custom-scrollbar">
-        <div className="w-full max-w-md bg-white p-10 rounded-[2rem] shadow-[0_8px_40px_rgb(0,0,0,0.06)] border border-slate-100 my-8">
+    <AdminLayout>
+      <div className="flex items-center justify-center p-6 bg-slate-50 w-full h-full">
+        <div className="w-full max-w-2xl bg-white p-10 rounded-2xl shadow-sm border border-slate-100">
            <div className="text-center mb-10">
               <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 text-[#b71a22]">
                  <UserPlus className="w-8 h-8" />
               </div>
               <h2 className="text-2xl font-bold text-slate-800">Create Account</h2>
-              <p className="text-slate-500 mt-2">Join Believers Hospital</p>
+              <p className="text-slate-500 mt-2">Provision a new user account</p>
            </div>
            
-           <form onSubmit={handleRegister} className="space-y-4">
-              
+            <form onSubmit={handleRegister} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                  <Label htmlFor="fullName" className="text-slate-700 font-medium">Full Name</Label>
                  <Input 
@@ -215,12 +199,13 @@ export default function Registration() {
                     <p className="text-sm text-red-500 font-medium">Passwords do not match</p>
                  )}
               </div>
+              </div>
               
-              <div className="pt-4 flex gap-3">
+              <div className="pt-4 flex gap-3 justify-end border-t border-slate-100 mt-6">
                  <Button 
                    type="button" 
                    variant="outline" 
-                   className="w-1/3 h-11 border-slate-200 text-slate-600"
+                   className="w-32 h-11 border-slate-200 text-slate-600"
                    onClick={() => {
                      setFullName('');
                      setUsername('');
@@ -236,25 +221,16 @@ export default function Registration() {
                  </Button>
                  <Button 
                    type="submit" 
-                   className="w-2/3 h-11 text-base font-semibold bg-[#b71a22] hover:bg-[#9a151c] text-white shadow-lg shadow-red-500/20 transition-all rounded-xl disabled:opacity-50"
+                   className="w-48 h-11 text-base font-semibold bg-[#b71a22] hover:bg-[#9a151c] text-white shadow-lg shadow-red-500/20 transition-all rounded-xl disabled:opacity-50"
                    disabled={!isFormValid}
                  >
                    Register
                  </Button>
               </div>
 
-              <div className="text-center mt-6">
-                 <p className="text-sm text-slate-600">
-                    Already have an account?{' '}
-                    <Link to="/admin/login" className="text-[#b71a22] hover:underline font-medium">
-                       Login here
-                    </Link>
-                 </p>
-              </div>
-              
-           </form>
+            </form>
         </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 }
