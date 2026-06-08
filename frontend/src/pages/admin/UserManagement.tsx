@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AdminLayout } from '@/components/layout/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,14 +24,7 @@ export default function UserManagement() {
   const [users, setUsers] = useState<User[]>([]);
   const { toast } = useToast();
 
-  // Create User Form State
-  const [newFullName, setNewFullName] = useState('');
-  const [newUsername, setNewUsername] = useState('');
-  const [newEmpId, setNewEmpId] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [newDesignation, setNewDesignation] = useState('');
-  const [newStatus, setNewStatus] = useState('Active');
+
 
   // Edit User Modal State
   const [editingUser, setEditingUser] = useState<User | null>(null);
@@ -60,42 +53,7 @@ export default function UserManagement() {
     fetchUsers();
   }, []);
 
-  const handleCreateUser = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      toast({ title: 'Validation Error', description: 'Passwords do not match', variant: 'destructive' });
-      return;
-    }
-    if (!newFullName || !newUsername || !newPassword || !newDesignation) {
-      toast({ title: 'Validation Error', description: 'Please fill all required fields', variant: 'destructive' });
-      return;
-    }
 
-    try {
-      const res = await fetch('http://localhost:5000/api/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fullName: newFullName, username: newUsername, password: newPassword, designation: newDesignation, status: newStatus, empId: newEmpId })
-      });
-      
-      if (res.ok) {
-        toast({ title: 'Success', description: 'User created successfully' });
-        setNewFullName('');
-        setNewUsername('');
-        setNewEmpId('');
-        setNewPassword('');
-        setConfirmPassword('');
-        setNewDesignation('');
-        setNewStatus('Active');
-        fetchUsers();
-      } else {
-        const err = await res.json();
-        toast({ title: 'Error', description: err.message, variant: 'destructive' });
-      }
-    } catch (error) {
-      toast({ title: 'Error', description: 'Failed to create user', variant: 'destructive' });
-    }
-  };
 
   const handleEditUser = (user: User) => {
     setEditingUser(user);
@@ -181,66 +139,9 @@ export default function UserManagement() {
         <h1 className="text-3xl font-bold tracking-tight text-brand">User Management</h1>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Create User Form */}
-        <Card className="lg:col-span-1 shadow-md">
-          <CardHeader className="bg-slate-50 border-b">
-            <CardTitle className="text-lg">Create New Account</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <form onSubmit={handleCreateUser} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name *</Label>
-                <Input id="fullName" value={newFullName} onChange={(e) => setNewFullName(e.target.value)} required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="username">Username *</Label>
-                <Input id="username" value={newUsername} onChange={(e) => setNewUsername(e.target.value)} required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="empId">Employee ID *</Label>
-                <Input id="empId" value={newEmpId} onChange={(e) => setNewEmpId(e.target.value)} required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password *</Label>
-                <Input id="password" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password *</Label>
-                <Input id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-              </div>
-              <div className="space-y-2">
-                <Label>Designation *</Label>
-                <Select value={newDesignation} onValueChange={setNewDesignation} required>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {designations.map(role => (
-                      <SelectItem key={role} value={role}>{role}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Status</Label>
-                <Select value={newStatus} onValueChange={setNewStatus}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Inactive">Inactive</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button type="submit" className="w-full bg-brand hover:bg-[#9a151c] text-white">Create User</Button>
-            </form>
-          </CardContent>
-        </Card>
-
+      <div className="w-full">
         {/* User List Table */}
-        <Card className="lg:col-span-2 shadow-md">
+        <Card className="w-full shadow-md">
           <CardHeader className="bg-slate-50 border-b">
             <CardTitle className="text-lg">Users List</CardTitle>
           </CardHeader>

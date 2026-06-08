@@ -27,7 +27,7 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     ...baseNavigation,
     { name: 'User Management', href: '/admin/users', icon: UserPlus },
-    { name: 'Registration Page', href: '/admin/registration', icon: UserPlus },
+    { name: 'Create User', href: '/admin/registration', icon: UserPlus },
   ];
 
   const designation = user?.designation as string | undefined;
