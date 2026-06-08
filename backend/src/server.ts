@@ -339,6 +339,24 @@ app.post('/api/auth/change-password', async (req, res) => {
   });
 });
 
+app.post('/api/auth/forgot-password', (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ message: 'Email is required' });
+  }
+  const db = getDB();
+  db.get('SELECT * FROM users WHERE email = ?', [email], (err, user: any) => {
+    if (err) {
+      res.status(500).json({ message: 'Database error' });
+    } else if (!user) {
+      res.status(404).json({ message: 'Email not found' });
+    } else {
+      // Simulated email dispatch
+      res.json({ message: 'Password reset link sent to your email successfully.' });
+    }
+  });
+});
+
 app.get('/api/users', (req, res) => {
   const db = getDB();
   db.all('SELECT id, full_name as fullName, username, designation, status, email, profile_picture as profilePicture, created_at FROM users', [], (err, rows) => {

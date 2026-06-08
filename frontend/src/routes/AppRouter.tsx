@@ -10,6 +10,7 @@ import UserCreate from '@/pages/admin/UserCreate';
 import UserManagement from '@/pages/admin/UserManagement';
 import MyProfile from '@/pages/admin/MyProfile';
 import ChangePassword from '@/pages/auth/ChangePassword';
+import ForgotPassword from '@/pages/auth/ForgotPassword';
 import { Toaster } from '@/components/ui/toaster';
 import { useAuthStore } from '@/store/useAuthStore';
 
@@ -49,6 +50,8 @@ export const AppRouter = () => {
 
         {/* Auth Route */}
         <Route path="/admin/login" element={<Login />} />
+        <Route path="/admin/forgot-password" element={<ForgotPassword />} />
+        
         {/* Admin Routes */}
         <Route path="/admin" element={<RequireAuth><Outlet /></RequireAuth>}>
           <Route index element={<RequireAdmin><Dashboard /></RequireAdmin>} />
