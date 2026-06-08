@@ -7,12 +7,19 @@ export type Designation =
   | 'Chief Nurse' 
   | 'ICU Administrator' 
   | 'Hospital Administrator' 
-  | 'Reception Staff';
+  | 'Reception Staff'
+  | 'Administrator'
+  | 'Doctor'
+  | 'Nurse'
+  | 'Technician'
+  | 'Receptionist'
+  | 'Staff';
 
 export interface User {
   id: string;
   fullName: string;
   username: string;
-  email: string;
+  email?: string;
   designation: Designation;
+  status?: string;
 }

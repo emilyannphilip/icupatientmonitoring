@@ -1,5 +1,4 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
- import hospitalLogo from "../../assets/bcmch-logo.png";
 import { LayoutDashboard, Users, PlusCircle, Settings, LogOut, Bell, User as UserIcon, UserPlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/useAuthStore';
