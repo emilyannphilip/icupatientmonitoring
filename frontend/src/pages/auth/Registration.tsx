@@ -48,9 +48,20 @@ export default function Registration() {
       if (response.ok) {
         toast({
           title: 'Registration Successful',
-          description: 'You can now log in with your new account.',
+          description: 'New user account has been provisioned.',
         });
-        navigate('/admin/login');
+        
+        // Clear form
+        setFullName('');
+        setUsername('');
+        setEmpId('');
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
+        setDesignation('');
+        setStatus('Active');
+        
+        navigate('/admin/registration');
       } else {
         const errorData = await response.json();
         toast({

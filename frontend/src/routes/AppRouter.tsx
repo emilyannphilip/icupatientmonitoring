@@ -52,6 +52,7 @@ export const AppRouter = () => {
         {/* Auth Route */}
         <Route path="/admin/login" element={<Login />} />
         <Route path="/admin/forgot-password" element={<ForgotPassword />} />
+        <Route path="/admin/registration" element={<RequireAuth><RequireAdmin><Registration /></RequireAdmin></RequireAuth>} />
         
         {/* Admin Routes */}
         <Route path="/admin" element={<RequireAuth><Outlet /></RequireAuth>}>
@@ -61,7 +62,6 @@ export const AppRouter = () => {
           <Route path="patients/edit/:id" element={<PatientEdit />} />
           
           {/* Admin-only Routes */}
-          <Route path="registration" element={<RequireAdmin><Registration /></RequireAdmin>} />
           <Route path="users/create" element={<RequireAdmin><UserCreate /></RequireAdmin>} />
           <Route path="users" element={<RequireAdmin><UserManagement /></RequireAdmin>} />
           
