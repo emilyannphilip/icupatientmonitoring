@@ -14,6 +14,7 @@ interface User {
   id: string;
   fullName: string;
   username: string;
+  empId?: string;
   designation: string;
   status: string;
   created_at: string;
@@ -26,6 +27,7 @@ export default function UserManagement() {
   // Create User Form State
   const [newFullName, setNewFullName] = useState('');
   const [newUsername, setNewUsername] = useState('');
+  const [newEmpId, setNewEmpId] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [newDesignation, setNewDesignation] = useState('');
@@ -35,6 +37,7 @@ export default function UserManagement() {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [editFullName, setEditFullName] = useState('');
   const [editUsername, setEditUsername] = useState('');
+  const [editEmpId, setEditEmpId] = useState('');
   const [editPassword, setEditPassword] = useState('');
   const [editDesignation, setEditDesignation] = useState('');
   const [editStatus, setEditStatus] = useState('');
@@ -72,13 +75,14 @@ export default function UserManagement() {
       const res = await fetch('http://localhost:5000/api/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fullName: newFullName, username: newUsername, password: newPassword, designation: newDesignation, status: newStatus })
+        body: JSON.stringify({ fullName: newFullName, username: newUsername, password: newPassword, designation: newDesignation, status: newStatus, empId: newEmpId })
       });
       
       if (res.ok) {
         toast({ title: 'Success', description: 'User created successfully' });
         setNewFullName('');
         setNewUsername('');
+        setNewEmpId('');
         setNewPassword('');
         setConfirmPassword('');
         setNewDesignation('');
@@ -97,6 +101,7 @@ export default function UserManagement() {
     setEditingUser(user);
     setEditFullName(user.fullName);
     setEditUsername(user.username);
+    setEditEmpId(user.empId || '');
     setEditDesignation(user.designation);
     setEditStatus(user.status);
     setEditPassword('');
@@ -105,7 +110,7 @@ export default function UserManagement() {
   const submitEditUser = async () => {
     if (!editingUser) return;
     try {
-      const payload: any = { fullName: editFullName, username: editUsername, designation: editDesignation, status: editStatus };
+      const payload: any = { fullName: editFullName, username: editUsername, designation: editDesignation, status: editStatus, empId: editEmpId };
       if (editPassword) payload.password = editPassword;
 
       const res = await fetch(`http://localhost:5000/api/users/${editingUser.id}`, {
@@ -147,6 +152,7 @@ export default function UserManagement() {
       const payload: any = { 
         fullName: user.fullName, 
         username: user.username, 
+        empId: user.empId,
         designation: user.designation, 
         status: newStatus 
       };
@@ -190,6 +196,10 @@ export default function UserManagement() {
               <div className="space-y-2">
                 <Label htmlFor="username">Username *</Label>
                 <Input id="username" value={newUsername} onChange={(e) => setNewUsername(e.target.value)} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="empId">Employee ID *</Label>
+                <Input id="empId" value={newEmpId} onChange={(e) => setNewEmpId(e.target.value)} required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password *</Label>
@@ -239,6 +249,7 @@ export default function UserManagement() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Full Name</TableHead>
+                  <TableHead>Emp. ID</TableHead>
                   <TableHead>Username</TableHead>
                   <TableHead>Designation</TableHead>
                   <TableHead>Status</TableHead>
@@ -249,12 +260,13 @@ export default function UserManagement() {
               <TableBody>
                 {users.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-4 text-slate-500">No users found.</TableCell>
+                    <TableCell colSpan={7} className="text-center py-4 text-slate-500">No users found.</TableCell>
                   </TableRow>
                 ) : (
                   users.map(user => (
                     <TableRow key={user.id}>
                       <TableCell className="font-medium">{user.fullName}</TableCell>
+                      <TableCell>{user.empId || '-'}</TableCell>
                       <TableCell>{user.username}</TableCell>
                       <TableCell>{user.designation}</TableCell>
                       <TableCell>
@@ -297,6 +309,10 @@ export default function UserManagement() {
             <div className="space-y-2">
               <Label htmlFor="editUsername">Username</Label>
               <Input id="editUsername" value={editUsername} onChange={(e) => setEditUsername(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="editEmpId">Employee ID</Label>
+              <Input id="editEmpId" value={editEmpId} onChange={(e) => setEditEmpId(e.target.value)} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="editPassword">New Password (leave blank to keep current)</Label>

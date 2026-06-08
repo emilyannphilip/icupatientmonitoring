@@ -11,6 +11,7 @@ import hospitalBg from "../../assets/hospital-bg.png";
 export default function Registration() {
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
+  const [empId, setEmpId] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [designation, setDesignation] = useState('');
@@ -40,7 +41,7 @@ export default function Registration() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ fullName, username, password, designation, status }),
+        body: JSON.stringify({ fullName, username, password, designation, status, empId }),
       });
 
       if (response.ok) {
@@ -66,7 +67,7 @@ export default function Registration() {
     }
   };
 
-  const isFormValid = fullName && username && password && confirmPassword && designation && status && (password === confirmPassword);
+  const isFormValid = fullName && username && empId && password && confirmPassword && designation && status && (password === confirmPassword);
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
@@ -119,6 +120,19 @@ export default function Registration() {
                    placeholder="Choose a username" 
                    value={username}
                    onChange={(e) => setUsername(e.target.value)}
+                   className="h-11 bg-slate-50 border-slate-200 focus-visible:ring-[#b71a22]"
+                   required 
+                 />
+              </div>
+
+              <div className="space-y-2">
+                 <Label htmlFor="empId" className="text-slate-700 font-medium">Employee ID</Label>
+                 <Input 
+                   id="empId" 
+                   type="text" 
+                   placeholder="Enter your employee ID" 
+                   value={empId}
+                   onChange={(e) => setEmpId(e.target.value)}
                    className="h-11 bg-slate-50 border-slate-200 focus-visible:ring-[#b71a22]"
                    required 
                  />
@@ -196,6 +210,7 @@ export default function Registration() {
                    onClick={() => {
                      setFullName('');
                      setUsername('');
+                     setEmpId('');
                      setPassword('');
                      setConfirmPassword('');
                      setDesignation('');

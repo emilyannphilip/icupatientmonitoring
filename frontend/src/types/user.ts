@@ -19,6 +19,7 @@ export interface User {
   id: string;
   fullName: string;
   username: string;
+  empId?: string;
   email?: string;
   designation: Designation;
   status?: string;

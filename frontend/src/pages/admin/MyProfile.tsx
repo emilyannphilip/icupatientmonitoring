@@ -168,6 +168,10 @@ export default function MyProfile() {
                   <Input value={user?.designation || ''} disabled className="bg-slate-50 text-slate-500 font-medium" />
                 </div>
                 <div className="space-y-2">
+                  <Label>Employee ID</Label>
+                  <Input value={user?.empId || '-'} disabled className="bg-slate-50 text-slate-500 font-medium" />
+                </div>
+                <div className="space-y-2">
                   <Label>Account Status</Label>
                   <div>
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">

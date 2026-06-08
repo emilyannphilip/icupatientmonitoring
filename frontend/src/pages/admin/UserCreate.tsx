@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 const userSchema = z.object({
   fullName: z.string().min(2, 'Full Name must be at least 2 characters'),
   username: z.string().min(4, 'Username must be at least 4 characters'),
+  empId: z.string().min(1, 'Employee ID is required'),
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string(),
@@ -46,6 +47,7 @@ export default function UserCreate() {
     defaultValues: {
       fullName: '',
       username: '',
+      empId: '',
       email: '',
       password: '',
       confirmPassword: '',
@@ -55,15 +57,46 @@ export default function UserCreate() {
 
   const onSubmit = async (data: UserFormValues) => {
     setIsLoading(true);
-    // Mock API call
-    setTimeout(() => {
-      setIsLoading(false);
-      toast({
-        title: 'User created',
-        description: `Successfully created user ${data.username}`,
+    try {
+      const response = await fetch('http://localhost:5000/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          fullName: data.fullName, 
+          username: data.username, 
+          password: data.password, 
+          designation: data.designation, 
+          status: 'Active',
+          empId: data.empId,
+          email: data.email
+        }),
       });
-      navigate('/admin');
-    }, 1000);
+
+      if (response.ok) {
+        toast({
+          title: 'User created',
+          description: `Successfully created user ${data.username}`,
+        });
+        navigate('/admin/users');
+      } else {
+        const errorData = await response.json();
+        toast({
+          title: 'Error',
+          description: errorData.message || 'Failed to create user',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Connection Error',
+        description: 'Could not connect to the server.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -99,6 +132,20 @@ export default function UserCreate() {
                     <FormLabel>Username</FormLabel>
                     <FormControl>
                       <Input placeholder="janesmith" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="empId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Employee ID</FormLabel>
+                    <FormControl>
+                      <Input placeholder="EMP001" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
