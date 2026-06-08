@@ -1,33 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { AdminLayout } from '@/components/layout/AdminLayout';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useAuthStore } from '@/store/useAuthStore';
+import { Camera, Edit2, Lock, Save, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function MyProfile() {
   const { user, updateProfile } = useAuthStore();
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Profile Details State
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Form State
   const [fullName, setFullName] = useState(user?.fullName || '');
   const [username, setUsername] = useState(user?.username || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [profilePicture, setProfilePicture] = useState(user?.profilePicture || '');
 
-  // Change Password State
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast({ title: 'Error', description: 'Image size must be less than 2MB', variant: 'destructive' });
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePicture(reader.result as string);
+        setIsEditing(true); // Automatically switch to edit mode to save
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCancel = () => {
+    setFullName(user?.fullName || '');
+    setUsername(user?.username || '');
+    setEmail(user?.email || '');
+    setProfilePicture(user?.profilePicture || '');
+    setIsEditing(false);
+  };
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
 
+    setIsSaving(true);
     try {
       const payload = {
         fullName,
         username,
+        email,
+        profilePicture,
         designation: user.designation,
         status: user.status
       };
@@ -40,70 +71,74 @@ export default function MyProfile() {
 
       if (res.ok) {
         const updatedUser = await res.json();
-        updateProfile({ fullName: updatedUser.fullName, username: updatedUser.username });
+        updateProfile({ 
+          fullName: updatedUser.fullName, 
+          username: updatedUser.username,
+          email: updatedUser.email,
+          profilePicture: updatedUser.profilePicture
+        });
         toast({ title: 'Success', description: 'Profile updated successfully' });
+        setIsEditing(false);
       } else {
         const err = await res.json();
         toast({ title: 'Error', description: err.message || 'Failed to update profile', variant: 'destructive' });
       }
     } catch (error) {
       toast({ title: 'Error', description: 'Server error while updating profile', variant: 'destructive' });
-    }
-  };
-
-  const handleChangePassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      toast({ title: 'Validation Error', description: 'All fields are required', variant: 'destructive' });
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      toast({ title: 'Validation Error', description: 'New password and confirm password must match', variant: 'destructive' });
-      return;
-    }
-    if (!user) return;
-
-    try {
-      const res = await fetch('http://localhost:5000/api/auth/change-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, currentPassword, newPassword })
-      });
-
-      if (res.ok) {
-        toast({ title: 'Success', description: 'Password updated successfully' });
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
-      } else {
-        const err = await res.json();
-        toast({ title: 'Error', description: err.message || 'Failed to update password', variant: 'destructive' });
-      }
-    } catch (error) {
-      toast({ title: 'Error', description: 'Server error while updating password', variant: 'destructive' });
+    } finally {
+      setIsSaving(false);
     }
   };
 
   return (
     <AdminLayout>
-      <div className="p-6 space-y-6 max-w-5xl mx-auto">
-        <h1 className="text-3xl font-bold tracking-tight text-brand">My Profile</h1>
+      <div className="p-6 space-y-6 max-w-3xl mx-auto">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold tracking-tight text-brand">User Profile</h1>
+          {!isEditing && (
+            <Button onClick={() => setIsEditing(true)} variant="outline" className="border-brand text-brand hover:bg-brand hover:text-white">
+              <Edit2 className="w-4 h-4 mr-2" /> Edit Profile
+            </Button>
+          )}
+        </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Profile Details Card */}
-          <Card className="shadow-md">
-            <CardHeader className="bg-slate-50 border-b">
-              <CardTitle>Profile Information</CardTitle>
-              <CardDescription>Update your personal details here.</CardDescription>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <form onSubmit={handleUpdateProfile} className="space-y-4">
+        <Card className="shadow-md overflow-hidden">
+          <div className="h-32 bg-slate-100 border-b relative">
+            <div className="absolute -bottom-12 left-8">
+              <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                <div className="w-24 h-24 rounded-full border-4 border-white bg-white shadow-sm overflow-hidden flex items-center justify-center bg-slate-50">
+                  {profilePicture ? (
+                    <img src={profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-3xl font-bold text-slate-300">
+                      {fullName.charAt(0).toUpperCase()}
+                    </span>
+                  )}
+                </div>
+                <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Camera className="w-6 h-6 text-white" />
+                </div>
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  className="hidden" 
+                  accept="image/png, image/jpeg" 
+                  onChange={handleImageUpload} 
+                />
+              </div>
+            </div>
+          </div>
+          
+          <CardContent className="pt-16 pb-8 px-8">
+            <form onSubmit={handleUpdateProfile} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="fullName">Full Name</Label>
                   <Input 
                     id="fullName" 
                     value={fullName} 
                     onChange={(e) => setFullName(e.target.value)} 
+                    disabled={!isEditing}
                     required 
                   />
                 </div>
@@ -113,65 +148,65 @@ export default function MyProfile() {
                     id="username" 
                     value={username} 
                     onChange={(e) => setUsername(e.target.value)} 
+                    disabled={!isEditing}
                     required 
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Designation (Read-only)</Label>
-                  <Input value={user?.designation || ''} disabled className="bg-slate-100 text-slate-500" />
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input 
+                    id="email" 
+                    type="email"
+                    value={email} 
+                    onChange={(e) => setEmail(e.target.value)} 
+                    disabled={!isEditing}
+                    placeholder="Enter your email"
+                  />
                 </div>
-                <Button type="submit" className="w-full bg-brand hover:bg-[#9a151c] text-white">
-                  Save Changes
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+                <div className="space-y-2">
+                  <Label>Designation (Role)</Label>
+                  <Input value={user?.designation || ''} disabled className="bg-slate-50 text-slate-500 font-medium" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Account Status</Label>
+                  <div>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                      {user?.status || 'Active'}
+                    </span>
+                  </div>
+                </div>
+              </div>
 
-          {/* Change Password Card */}
-          <Card className="shadow-md">
-            <CardHeader className="bg-slate-50 border-b">
-              <CardTitle>Change Password</CardTitle>
-              <CardDescription>Secure your account with a new password.</CardDescription>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <form onSubmit={handleChangePassword} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="currentPassword">Current Password</Label>
-                  <Input 
-                    id="currentPassword" 
-                    type="password" 
-                    value={currentPassword} 
-                    onChange={(e) => setCurrentPassword(e.target.value)} 
-                    required 
-                  />
+              {isEditing && (
+                <div className="flex items-center justify-end gap-3 pt-4 border-t">
+                  <Button type="button" variant="outline" onClick={handleCancel} disabled={isSaving}>
+                    <X className="w-4 h-4 mr-2" /> Cancel
+                  </Button>
+                  <Button type="submit" className="bg-brand hover:bg-[#9a151c] text-white" disabled={isSaving}>
+                    {isSaving ? 'Saving...' : (
+                      <>
+                        <Save className="w-4 h-4 mr-2" /> Save Changes
+                      </>
+                    )}
+                  </Button>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="newPassword">New Password</Label>
-                  <Input 
-                    id="newPassword" 
-                    type="password" 
-                    value={newPassword} 
-                    onChange={(e) => setNewPassword(e.target.value)} 
-                    required 
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                  <Input 
-                    id="confirmPassword" 
-                    type="password" 
-                    value={confirmPassword} 
-                    onChange={(e) => setConfirmPassword(e.target.value)} 
-                    required 
-               />
-                </div>
-                <Button type="submit" className="w-full bg-slate-800 hover:bg-slate-700 text-white">
-                  Update Password
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
+              )}
+            </form>
+
+            <div className="mt-10 pt-6 border-t border-slate-100">
+              <h3 className="text-lg font-semibold text-slate-800 mb-2">Security</h3>
+              <p className="text-sm text-slate-500 mb-4">Manage your password and security settings.</p>
+              <Button 
+                type="button" 
+                variant="outline" 
+                className="w-full sm:w-auto"
+                onClick={() => navigate('/admin/change-password')}
+              >
+                <Lock className="w-4 h-4 mr-2" /> Change Password
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </AdminLayout>
   );

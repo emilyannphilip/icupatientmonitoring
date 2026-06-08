@@ -17,6 +17,8 @@ export const initDB = () => {
           password_hash TEXT NOT NULL,
           designation TEXT NOT NULL,
           status TEXT NOT NULL,
+          email TEXT,
+          profile_picture TEXT,
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
@@ -26,6 +28,9 @@ export const initDB = () => {
           reject(err);
         } else {
           console.log('Users table ready.');
+          // Safely add columns to existing table
+          db.run("ALTER TABLE users ADD COLUMN email TEXT", () => {});
+          db.run("ALTER TABLE users ADD COLUMN profile_picture TEXT", () => {});
           await seedAdminUser();
           resolve();
         }

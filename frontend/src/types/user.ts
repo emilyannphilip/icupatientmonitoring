@@ -22,4 +22,5 @@ export interface User {
   email?: string;
   designation: Designation;
   status?: string;
+  profilePicture?: string;
 }

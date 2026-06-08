@@ -298,8 +298,8 @@ app.post('/api/auth/login', (req, res) => {
           res.status(403).json({ message: 'Account is inactive' });
         } else {
           // Exclude password_hash from response
-          const { password_hash, ...userProfile } = user;
-          res.json(userProfile);
+          const { password_hash, profile_picture, ...userProfile } = user;
+          res.json({ ...userProfile, profilePicture: profile_picture });
         }
       } else {
         res.status(401).json({ message: 'Invalid credentials' });
@@ -341,14 +341,14 @@ app.post('/api/auth/change-password', async (req, res) => {
 
 app.get('/api/users', (req, res) => {
   const db = getDB();
-  db.all('SELECT id, full_name as fullName, username, designation, status, created_at FROM users', [], (err, rows) => {
+  db.all('SELECT id, full_name as fullName, username, designation, status, email, profile_picture as profilePicture, created_at FROM users', [], (err, rows) => {
     if (err) res.status(500).json({ message: 'Database error' });
     else res.json(rows);
   });
 });
 
 app.post('/api/users', async (req, res) => {
-  const { fullName, username, password, designation, status } = req.body;
+  const { fullName, username, password, designation, status, email, profilePicture } = req.body;
   const db = getDB();
   try {
     const salt = await bcrypt.genSalt(10);
@@ -356,8 +356,8 @@ app.post('/api/users', async (req, res) => {
     const id = uuidv4();
     
     db.run(
-      'INSERT INTO users (id, full_name, username, password_hash, designation, status) VALUES (?, ?, ?, ?, ?, ?)',
-      [id, fullName, username, hashedPassword, designation, status],
+      'INSERT INTO users (id, full_name, username, password_hash, designation, status, email, profile_picture) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [id, fullName, username, hashedPassword, designation, status, email, profilePicture],
       function (err) {
         if (err) {
           if (err.message.includes('UNIQUE constraint failed')) {
@@ -366,7 +366,7 @@ app.post('/api/users', async (req, res) => {
             res.status(500).json({ message: 'Database error' });
           }
         } else {
-          res.status(201).json({ id, fullName, username, designation, status });
+          res.status(201).json({ id, fullName, username, designation, status, email, profilePicture });
         }
       }
     );
@@ -376,7 +376,7 @@ app.post('/api/users', async (req, res) => {
 });
 
 app.put('/api/users/:id', async (req, res) => {
-  const { fullName, username, password, designation, status } = req.body;
+  const { fullName, username, password, designation, status, email, profilePicture } = req.body;
   const id = req.params.id;
   const db = getDB();
   
@@ -385,20 +385,20 @@ app.put('/api/users/:id', async (req, res) => {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
       db.run(
-        'UPDATE users SET full_name = ?, username = ?, password_hash = ?, designation = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-        [fullName, username, hashedPassword, designation, status, id],
+        'UPDATE users SET full_name = ?, username = ?, password_hash = ?, designation = ?, status = ?, email = ?, profile_picture = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+        [fullName, username, hashedPassword, designation, status, email, profilePicture, id],
         function (err) {
           if (err) res.status(500).json({ message: 'Database error' });
-          else res.json({ id, fullName, username, designation, status });
+          else res.json({ id, fullName, username, designation, status, email, profilePicture });
         }
       );
     } else {
       db.run(
-        'UPDATE users SET full_name = ?, username = ?, designation = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-        [fullName, username, designation, status, id],
+        'UPDATE users SET full_name = ?, username = ?, designation = ?, status = ?, email = ?, profile_picture = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+        [fullName, username, designation, status, email, profilePicture, id],
         function (err) {
           if (err) res.status(500).json({ message: 'Database error' });
-          else res.json({ id, fullName, username, designation, status });
+          else res.json({ id, fullName, username, designation, status, email, profilePicture });
         }
       );
     }
