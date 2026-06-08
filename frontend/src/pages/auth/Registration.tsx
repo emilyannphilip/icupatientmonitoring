@@ -159,7 +159,7 @@ export default function Registration() {
                      <SelectValue placeholder="Select designation" />
                    </SelectTrigger>
                    <SelectContent>
-                     <SelectItem value="Administrator">Administrator</SelectItem>
+                     <SelectItem value="Admin">Admin</SelectItem>
                      <SelectItem value="Doctor">Doctor</SelectItem>
                      <SelectItem value="Nurse">Nurse</SelectItem>
                      <SelectItem value="Technician">Technician</SelectItem>

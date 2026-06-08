@@ -33,6 +33,7 @@ export const initDB = () => {
           db.run("ALTER TABLE users ADD COLUMN emp_id TEXT", () => {});
           db.run("ALTER TABLE users ADD COLUMN email TEXT", () => {});
           db.run("ALTER TABLE users ADD COLUMN profile_picture TEXT", () => {});
+          db.run("UPDATE users SET designation = 'Admin' WHERE designation = 'Administrator'", () => {});
           await seedAdminUser();
           resolve();
         }
@@ -53,7 +54,7 @@ const seedAdminUser = () => {
         
         db.run(
           'INSERT INTO users (id, full_name, username, password_hash, designation, status) VALUES (?, ?, ?, ?, ?, ?)',
-          [id, 'Administrator', 'admin', hashedPassword, 'Administrator', 'Active'],
+          [id, 'Admin', 'admin', hashedPassword, 'Admin', 'Active'],
           (err) => {
             if (err) {
               console.error('Error seeding admin user:', err);

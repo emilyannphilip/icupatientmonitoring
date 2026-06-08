@@ -34,7 +34,8 @@ const designations: Designation[] = [
   'Chief Nurse', 
   'ICU Administrator', 
   'Hospital Administrator', 
-  'Reception Staff'
+  'Reception Staff',
+  'Admin'
 ];
 
 export default function UserCreate() {

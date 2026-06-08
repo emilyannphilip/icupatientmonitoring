@@ -122,13 +122,7 @@ export default function Login() {
                  Login
               </Button>
 
-              <div className="text-center mt-6">
-                 <p className="text-sm text-slate-600">
-                    <Link to="/admin/registration" className="text-[#b71a22] hover:underline font-medium">
-                       Click here for registration
-                    </Link>
-                 </p>
-              </div>
+
            </form>
         </div>
       </div>

@@ -8,7 +8,7 @@ export type Designation =
   | 'ICU Administrator' 
   | 'Hospital Administrator' 
   | 'Reception Staff'
-  | 'Administrator'
+  | 'Admin'
   | 'Doctor'
   | 'Nurse'
   | 'Technician'

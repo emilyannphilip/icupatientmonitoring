@@ -29,7 +29,7 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     { name: 'User Management', href: '/admin/users', icon: UserPlus },
   ];
 
-  const navigation = user?.designation === 'Administrator' ? adminNavigation : baseNavigation;
+  const navigation = user?.designation === 'Admin' ? adminNavigation : baseNavigation;
 
   const handleLogout = () => {
     logout();
@@ -95,9 +95,9 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
                   <div className="flex items-center gap-3 cursor-pointer group">
                     <div className="text-right hidden sm:block">
                       <p className="text-sm font-semibold text-slate-700 group-hover:text-brand transition-colors">
-                        {user?.fullName || 'Admin User'}
+                        {user?.fullName || 'User'}
                       </p>
-                      <p className="text-xs text-slate-500">{user?.designation || 'Administrator'}</p>
+                      <p className="text-xs text-slate-500">{user?.designation || 'Admin'}</p>
                     </div>
                     <Avatar className="h-9 w-9 border border-slate-200">
                       <AvatarImage src="" alt={user?.fullName || 'Avatar'} />

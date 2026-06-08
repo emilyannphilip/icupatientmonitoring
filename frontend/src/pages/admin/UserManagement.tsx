@@ -42,7 +42,7 @@ export default function UserManagement() {
   const [editDesignation, setEditDesignation] = useState('');
   const [editStatus, setEditStatus] = useState('');
 
-  const designations = ['Administrator', 'Doctor', 'Nurse', 'Technician', 'Receptionist', 'Staff'];
+  const designations = ['Admin', 'Doctor', 'Nurse', 'Technician', 'Receptionist', 'Staff'];
 
   const fetchUsers = async () => {
     try {
