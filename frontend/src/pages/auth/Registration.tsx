@@ -12,6 +12,7 @@ export default function Registration() {
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
   const [empId, setEmpId] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [designation, setDesignation] = useState('');
@@ -41,7 +42,7 @@ export default function Registration() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ fullName, username, password, designation, status, empId }),
+        body: JSON.stringify({ fullName, username, password, designation, status, empId, email }),
       });
 
       if (response.ok) {
@@ -67,7 +68,7 @@ export default function Registration() {
     }
   };
 
-  const isFormValid = fullName && username && empId && password && confirmPassword && designation && status && (password === confirmPassword);
+  const isFormValid = fullName && username && empId && email && password && confirmPassword && designation && status && (password === confirmPassword);
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
@@ -133,6 +134,19 @@ export default function Registration() {
                    placeholder="Enter your employee ID" 
                    value={empId}
                    onChange={(e) => setEmpId(e.target.value)}
+                   className="h-11 bg-slate-50 border-slate-200 focus-visible:ring-[#b71a22]"
+                   required 
+                 />
+              </div>
+
+              <div className="space-y-2">
+                 <Label htmlFor="email" className="text-slate-700 font-medium">Email Address</Label>
+                 <Input 
+                   id="email" 
+                   type="email" 
+                   placeholder="Enter your email" 
+                   value={email}
+                   onChange={(e) => setEmail(e.target.value)}
                    className="h-11 bg-slate-50 border-slate-200 focus-visible:ring-[#b71a22]"
                    required 
                  />
@@ -211,6 +225,7 @@ export default function Registration() {
                      setFullName('');
                      setUsername('');
                      setEmpId('');
+                     setEmail('');
                      setPassword('');
                      setConfirmPassword('');
                      setDesignation('');
