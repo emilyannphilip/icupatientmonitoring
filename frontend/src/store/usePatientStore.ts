@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import type { Patient } from '@/types/patient';
-import { patientApi } from '@/services/api/patientApi';
 
 interface PatientStore {
   patients: Patient[];
