@@ -1,6 +1,5 @@
 import { AdminLayout } from '@/components/layout/AdminLayout';
 import { PatientForm } from '@/components/patient/PatientForm';
-import { patientApi } from '@/services/api/patientApi';
 import { usePatientStore } from '@/store/usePatientStore';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
@@ -21,10 +20,8 @@ export default function PatientEdit() {
     if (existingPatient) {
       setPatient(existingPatient);
     } else if (id) {
-      patientApi.getPatientById(id).then(setPatient).catch(() => {
-        toast({ title: 'Error', description: 'Patient not found', variant: 'destructive' });
-        navigate('/admin/patients');
-      });
+      toast({ title: 'Error', description: 'Patient not found', variant: 'destructive' });
+      navigate('/admin/patients');
     }
   }, [id, patients, navigate]);
 
@@ -32,8 +29,7 @@ export default function PatientEdit() {
     if (!id) return;
     setIsSubmitting(true);
     try {
-      const updated = await patientApi.updatePatient(id, data);
-      updatePatient(updated);
+      updatePatient({ ...data, id });
       toast({ title: 'Success', description: 'Patient updated successfully.' });
       navigate('/admin/patients');
     } catch (error) {

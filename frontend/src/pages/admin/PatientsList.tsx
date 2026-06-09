@@ -7,7 +7,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Search, Plus, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { patientApi } from '@/services/api/patientApi';
 import { toast } from '@/hooks/use-toast';
 
 export default function PatientsList() {
@@ -23,7 +22,6 @@ export default function PatientsList() {
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this patient?')) {
       try {
-        await patientApi.deletePatient(id);
         removePatient(id);
         toast({ title: 'Success', description: 'Patient deleted successfully.' });
       } catch (error) {

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import type { Patient } from '@/types/patient';
 
 interface PatientStore {
@@ -216,31 +217,42 @@ const mockPatients: Patient[] = [
   },
 ];
 
-export const usePatientStore = create<PatientStore>((set) => ({
-  patients: mockPatients,
-  isLoading: false,
-  error: null,
+export const usePatientStore = create<PatientStore>()(
+  persist(
+    (set) => ({
+      patients: mockPatients,
+      isLoading: false,
+      error: null,
 
-  fetchPatients: async () => {
-    // Overriding the backend fetch to use the local mock database directly
-    set({ patients: mockPatients, isLoading: false, error: null });
-  },
+      fetchPatients: async () => {
+        // Just setting isLoading briefly to mimic async fetch
+        set({ isLoading: true });
+        setTimeout(() => {
+          set({ isLoading: false, error: null });
+        }, 300);
+      },
 
-  addPatient: (patient) => 
-    set((state) => {
-      if (state.patients.find((p) => p.id === patient.id)) return state;
-      return { patients: [...state.patients, patient] };
+      addPatient: (patient) =>
+        set((state) => {
+          const newPatient = { ...patient, id: patient.id || crypto.randomUUID() };
+          if (state.patients.find((p) => p.id === newPatient.id)) return state;
+          return { patients: [...state.patients, newPatient] };
+        }),
+
+      updatePatient: (patient) =>
+        set((state) => ({
+          patients: state.patients.map((p) => (p.id === patient.id ? patient : p)),
+        })),
+
+      removePatient: (id) =>
+        set((state) => ({
+          patients: state.patients.filter((p) => p.id !== id),
+        })),
+
+      setPatients: (patients) => set({ patients }),
     }),
-
-  updatePatient: (patient) =>
-    set((state) => ({
-      patients: state.patients.map((p) => (p.id === patient.id ? patient : p)),
-    })),
-
-  removePatient: (id) =>
-    set((state) => ({
-      patients: state.patients.filter((p) => p.id !== id),
-    })),
-
-  setPatients: (patients) => set({ patients }),
-}));
+    {
+      name: 'patient-storage',
+    }
+  )
+);

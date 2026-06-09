@@ -1,6 +1,5 @@
 import { AdminLayout } from '@/components/layout/AdminLayout';
 import { PatientForm } from '@/components/patient/PatientForm';
-import { patientApi } from '@/services/api/patientApi';
 import { usePatientStore } from '@/store/usePatientStore';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
@@ -16,8 +15,7 @@ export default function PatientCreate() {
   const handleSubmit = async (data: any) => {
     setIsSubmitting(true);
     try {
-      const newPatient = await patientApi.createPatient(data);
-      addPatient(newPatient);
+      addPatient(data);
       toast({ title: 'Success', description: 'Patient added successfully.' });
       navigate('/admin/patients');
     } catch (error) {
